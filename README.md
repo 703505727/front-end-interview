@@ -7,3 +7,8 @@
 - [实现 bind()](./src/bind.js) 
 - [实现 apply()](./src/apply.js) 
 - [实现 call()](./src/call.js) 
+
+
+- [函数防抖](./src/debounce.js) ★★★
+- [函数节流](./src/throttle.js) ★★★
+
