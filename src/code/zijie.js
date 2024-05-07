@@ -247,3 +247,54 @@ var doubleIt = function (head) {
   }
   return re(dummy.next);
 };
+
+// 二叉树计算宽度 满二叉树编号 使用dfs 一个map记录每个深度的第一个节点编号，然后每次相减即可 如果过长，则每层重新编号防止溢出
+function widthOfBinaryTree(root) {
+  const map = new Map();
+  let ans = 1;
+  const dfs = (node, u, depth) => {
+    if (!node) {
+      return;
+    }
+    if (!map.has(depth)) {
+      map.set(depth, u);
+    }
+    ans = Math.max(ans, u - map.get(depth) + 1);
+    dfs(node.left, u * 2, depth + 1);
+    dfs(node.right, u * 2 + 1, depth + 1);
+  };
+  dfs(root, 1, 1);
+  return ans;
+}
+
+// 最小k个数
+function smallestK(arr, k) {
+  if (k === 0) {
+    return [];
+  }
+  const getP = (arr, left, right) => {
+    const pValue = arr[right];
+    let l = left - 1;
+    for (let i = left; i < right; i++) {
+      if (arr[i] <= pValue) {
+        l++;
+        [arr[l], arr[i]] = [arr[i], arr[l]];
+      }
+    }
+    [arr[l + 1], arr[right]] = [arr[right], arr[l + 1]];
+    return l + 1;
+  };
+
+  const quickSelect = (arr, left, right, k) => {
+    const p = getP(arr, left, right);
+    if (p < k) {
+      return quickSelect(arr, p + 1, right, k);
+    } else if (p > k) {
+      return quickSelect(arr, left, p - 1, k);
+    } else {
+      return;
+    }
+  };
+  quickSelect(arr, 0, arr.length - 1, k - 1); // 这里修改为k-1以便正确判断
+  return arr.slice(0, k);
+}
