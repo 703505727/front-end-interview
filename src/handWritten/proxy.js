@@ -24,13 +24,13 @@ const res = obj[1][2][3] + 4 // 10
 const createProxy2 = (value = 0) => {
     return new Proxy(function () { }, {
         get(target, propKey, receiver) {
-            return createProxy(value + Number(propKey)) //这个和之前一样 递归返回
+            return createProxy2(value + Number(propKey)) //这个和之前一样 递归返回
         },
         apply(target, thisArg, argArray) {
             return value // 进入 apply 陷阱,直接返回 value
         }
     })
 }
-const obj2 = createProxy()
-const res2 = obj[1][2][3]() // 测试一下 完美通过
+const obj2 = createProxy2()
+const res2 = obj2[1][2][3]() // 测试一下 完美通过
 

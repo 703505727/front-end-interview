@@ -10,12 +10,13 @@
 const myDebounce = (fn, wait) => {
   let timeId = null;
   return function (...args) {
-    const context = this;
+    // const context = this;
     if (timeId) {
       clearTimeout(timeId);
     }
     timeId = setTimeout(() => {
-      fn.call(context, ...args);
+      // fn.call(context, ...args);
+      fn(...args)
     }, wait);
   };
 };
