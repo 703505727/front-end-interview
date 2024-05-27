@@ -352,6 +352,7 @@ var numSubarrayProductLessThanK = function (nums, k) {
  * @param {string} s
  * @return {number}
  */
+// 无重复字符最长子串
 var lengthOfLongestSubstring = function (s) {
   const length = s.length;
   if (length <= 1) {
@@ -512,35 +513,25 @@ var maxSubArray = function (nums) {
   return ans;
 };
 
-// 最长回文子串 //区间DP 待定
+// 最长回文子串 //区间DP
 /**
  * @param {string} s
  * @return {string}
  */
-var longestPalindrome = function (s) {
+var longestPalindromeSubseq = function (s) {
   const length = s.length;
-  const dp = Array(length).fill(0);
-  dp[0] = 1;
-  let ans = "";
-  for (let i = 1; i < length; i++) {
-    if (i - dp[i - 1] - 1 >= 0 && s[i - dp[i - 1] - 1] === s[i]) {
-      dp[i] = dp[i - 1] + 2;
-    } else if (
-      s[i] === s[i - 1] &&
-      s
-        .slice(i - dp[i - 1], i)
-        .split("")
-        .every((i) => i === s[i])
-    ) {
-      dp[i] = dp[i - 1] + 1;
-    } else {
-      dp[i] = 1;
-    }
-    if (dp[i] >= ans.length) {
-      ans = s.slice(i - dp[i] + 1, i + 1);
+  const dp = Array.from({ length: length }, () => Array(length).fill(0));
+  for (let i = length - 1; i >= 0; i--) {
+    dp[i][i] = 1;
+    for (let j = i + 1; j < length; j++) {
+      if (s[i] === s[j]) {
+        dp[i][j] = dp[i + 1][j - 1] + 2;
+      } else {
+        dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+      }
     }
   }
-  return ans;
+  return dp[0][length - 1];
 };
 
 // 2320. 统计放置房子的方式数
@@ -774,14 +765,14 @@ console.log(
 // 没做出来
 // 使用栈
 var longestValidParentheses = function (s) {
-  const lenght = s.length;
-  if (lenght === 0) {
+  const length = s.length;
+  if (length === 0) {
     return "";
   }
   let ans = "";
   let leftCount = 0;
   let l = 0;
-  for (let i = 0; i < lenght; i++) {
+  for (let i = 0; i < length; i++) {
     if (s[i] === "(") {
       leftCount++;
     } else {
@@ -803,6 +794,31 @@ var longestValidParentheses = function (s) {
     }
   }
   return ans;
+};
+// 32 官解，参考
+const longestValidParentheses = (s) => {
+  let maxLen = 0;
+  const len = s.length;
+  const dp = new Array(len).fill(0);
+  for (let i = 1; i < len; i++) {
+    if (s[i] == ")") {
+      if (s[i - 1] == "(") {
+        if (i - 2 >= 0) {
+          dp[i] = dp[i - 2] + 2;
+        } else {
+          dp[i] = 2;
+        }
+      } else if (s[i - dp[i - 1] - 1] == "(") {
+        if (i - dp[i - 1] - 2 >= 0) {
+          dp[i] = dp[i - 1] + 2 + dp[i - dp[i - 1] - 2];
+        } else {
+          dp[i] = dp[i - 1] + 2;
+        }
+      }
+    }
+    maxLen = Math.max(maxLen, dp[i]);
+  }
+  return maxLen;
 };
 
 /**
@@ -943,6 +959,8 @@ var nextGreaterElement = function (nums1, nums2) {
   const length = nums2.length;
   const stask = [];
   const map = new Map();
+  // 单调递减栈
+  //单调栈最后一个元素
   for (let i = length - 1; i >= 0; i--) {
     while (stask.length !== 0 && nums2[i] > stask[stask.length - 1]) {
       stask.pop();
@@ -959,6 +977,7 @@ var nextGreaterElements = function (nums) {
   const ret = new Array(n).fill(-1);
   const stk = [];
   for (let i = 0; i < n * 2 - 1; i++) {
+    // 单调栈用存取
     while (stk.length && nums[stk[stk.length - 1]] < nums[i % n]) {
       ret[stk[stk.length - 1]] = nums[i % n];
       stk.pop();
@@ -1037,4 +1056,185 @@ var superEggDrop = function (k, n) {
     return res;
   };
   return dfs(k, n);
+};
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+// 斐波那契数列
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var fib = function (n) {
+  if (n === 0) {
+    return 0;
+  }
+  if (n === 1) {
+    return 1;
+  }
+  const dp = [0, 1];
+  for (let i = 2; i <= n; i++) {
+    const sum = (dp[0] + dp[1]) % (1e9 + 7);
+    dp[0] = dp[1];
+    dp[1] = sum;
+  }
+  return dp[1] % (1e9 + 7);
+};
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+// 正整数拆分
+var integerBreak = function (n) {
+  const dp = Array.from({ length: n + 1 }, () => 0);
+  dp[2] = 1;
+  for (let i = 3; i <= n; i++) {
+    for (let j = 1; j < i; j++) {
+      dp[i] = Math.max(dp[i], (i - j) * j, dp[i - j] * j);
+    }
+  }
+  return dp[n];
+};
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
+ */
+// 最近公共祖先节点
+var lowestCommonAncestor = function (root, p, q) {
+  if (root === null || root === p || root === q) {
+    return root;
+  }
+  const left = lowestCommonAncestor(node.left, p, q);
+  const right = lowestCommonAncestor(node.right, p, q);
+  if (left && right) {
+    return root;
+  }
+  return left ?? right;
+};
+
+// 区间DP
+/**
+ * @param {string} s
+ * @return {number}
+ */
+// 516最长回文子串
+var longestPalindromeSubseq = function (s) {
+  // dfs(i,i) = 1
+  // dfs(i,j) = dfs(i+1,j-1)
+  // dfs(i,j) = max(dfs(i+1,j),dfs(i,j-1))
+  const length = s.length;
+  const dp = Array.from({ length: length }, () => Array(length).fill(0));
+  for (let i = length - 1; i >= 0; i--) {
+    dp[i][i] = 1;
+    for (let j = i + 1; j < length; j++) {
+      if (s[i] === s[j]) {
+        dp[i][j] = dp[i + 1][j - 1] + 2;
+      } else {
+        dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+      }
+    }
+  }
+  return dp[0][length - 1];
+};
+
+// 1039
+var minScoreTriangulation = function (values) {
+  // dfs(i,j) =min(k-(i,j): dfs(i,k)+v[i]*v[j]*v[k]+dfs(k,j))
+
+  const length = values.length;
+  const dp = Array.from({ length }, () => Array(length).fill(Infinity));
+
+  for (let i = 0; i < length - 1; i++) {
+    dp[i][i + 1] = 0;
+  }
+
+  for (let i = length - 3; i >= 0; i--) {
+    for (let j = i + 2; j < length; j++) {
+      for (let k = i + 1; k < j; k++) {
+        dp[i][j] = Math.min(
+          dp[i][j],
+          dp[i][k] + values[i] * values[j] * values[k] + dp[k][j]
+        );
+      }
+    }
+  }
+  return dp[0][length - 1];
+};
+
+// 猜数字大小 375
+var getMoneyAmount = function (n) {
+  // dfs(i, j) =k max(0,dfs(i,k-1)+k,k+dfs(k+1,j))
+  const dp = Array.from({ length: n + 1 }, () => Array(n + 1).fill(Infinity));
+
+  for (let i = n; i >= 1; i--) {
+    for (let j = i; j <= n; j++) {
+      if (i === j) {
+        dp[i][j] = 0;
+      } else {
+        for (let k = i; k <= j; k++) {
+          dp[i][j] = Math.min(
+            dp[i][j],
+            Math.max(
+              0,
+              k - 1 <= j && k - 1 >= i ? dp[i][k - 1] + k : 0,
+              k + 1 <= j && k + 1 >= i ? dp[k + 1][j] + k : 0
+            )
+          );
+        }
+      }
+    }
+  }
+
+  return dp[1][n];
+};
+
+const isHuiwen = (s) => {
+  for (let i = 0; i < Math.floor(s.length / 2); i++) {
+    if (s[i] === s[s.length - 1 - i]) {
+      continue;
+    } else {
+      return false;
+    }
+  }
+  return true;
+};
+
+// 分割回文子串 132
+// 超时
+var minCut = function (s) {
+  // dfs(i,j) = min(1 + dfs(i,k) + dfs(k,j))
+  const length = s.length;
+  const dp = Array.from({ length }, () => Array(length).fill(0));
+  for (let i = length - 1; i >= 0; i--) {
+    for (let j = i; j < length; j++) {
+      if (isHuiwen(s.slice(i, j + 1))) {
+        dp[i][j] = 0;
+      } else {
+        let min = Infinity;
+        for (let k = i; k < j; k++) {
+          if (k === i) {
+            min = Math.min(min, 1 + dp[k + 1][j]);
+          } else if (k === j - 1) {
+            min = Math.min(min, 1 + dp[i][k]);
+          }
+          min = Math.min(min, 1 + dp[i][k] + dp[k + 1][j]);
+        }
+        dp[i][j] = min;
+      }
+    }
+  }
+  return dp[0][length - 1];
 };
