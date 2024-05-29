@@ -26,3 +26,16 @@ const curriedSum = curry(sum);
 console.log(curriedSum(1, 2, 3)); // 输出 6
 console.log(curriedSum(1)(2, 3)); // 输出 6
 console.log(curriedSum(1)(2)(3)); // 输出 6
+
+const sum2 = (...args) => {
+  const fn = (...newArgs) => {
+    return sum2(...newArgs, ...args);
+  };
+  fn.sumOf = () => args.reduce((p, c) => p + c, 0);
+  return fn;
+};
+
+console.log(sum2(1, 2).sumOf()); // 返回 3
+console.log(sum2(1, 2)(3).sumOf()); // 返回 6
+console.log(sum2(1)(2, 3, 4).sumOf()); // 返回 10
+console.log(sum2(1, 2)(3, 4)(5).sumOf()); // 返回 15

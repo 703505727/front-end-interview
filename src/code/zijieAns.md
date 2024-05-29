@@ -190,5 +190,62 @@ Secondly, I have a strong adaptability, i am always able to adjust to the new en
 
 As for a disadvantage, I can be quite direct in my communication, sometimes, this directness may cause discomfort in daliy work interactions. However, outside of work, I maintain friendly relations with my colleagues, eat together drink together。
 
-
 // 普通准备
+
+// 字节国际化短视频
+1、垃圾回收
+2、对象去重 + 判断两个对象是否深度相等
+
+```javaScript
+function isDeepEqual(obj1, obj2) {
+    if (obj1 === obj2) {
+        return true; // 如果两个对象是相同的引用，返回 true
+    }
+
+    if (typeof obj1 !== 'object' || obj1 === null ||
+        typeof obj2 !== 'object' || obj2 === null) {
+        return false; // 如果任一项不是对象或者是 null，它们不相等
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+        return false; // 如果两个对象键的数量不一样，它们不相等
+    }
+
+    for (let key of keys1) {
+        if (!keys2.includes(key) || !isDeepEqual(obj1[key], obj2[key])) {
+            return false; // 如果第二个对象没有对应的键，或者对应键的值不相等，则不相等
+        }
+    }
+
+    return true; // 如果通过了所有检查，则两个对象深度相等
+}
+
+// 示例
+const obj1 = { a: 1, b: { c: 1 } };
+const obj2 = { a: 1, b: { c: 1 } };
+console.log(isDeepEqual(obj1, obj2)); // 输出：true
+
+function isDeepEqual(obj1, obj2) {
+    // ...（isDeepEqual函数实现，请参照前面的回答）
+}
+
+function uniqueObjects(array) {
+    return array.filter((item, index, arr) => {
+        // 如果是第一个出现的相同对象，则保留（之前没有出现过相同的对象）
+        return arr.findIndex(otherItem => isDeepEqual(item, otherItem)) === index;
+    });
+}
+
+// 示例
+const objects = [
+    { a: 1, b: { c: 1 } },
+    { a: 1, b: { c: 1 } },
+    { a: 1, b: { c: 2 } }
+];
+
+const unique = uniqueObjects(objects);
+console.log(unique); // 输出去重后的对象数组
+```

@@ -353,3 +353,239 @@ var rotate = function (matrix) {
     }
   }
 };
+
+/**
+ * @param {number[][]} matrix
+ * @param {number} target
+ * @return {boolean}
+ */
+// 240. 搜索二维矩阵 II
+// 解法2 - 从右上角开始，小往左，大往下
+var searchMatrix = function (matrix, target) {
+  const binaryFind = (arr, target) => {
+    let left = 0;
+    let rigth = arr.length - 1;
+    while (left <= rigth) {
+      let mid = Math.floor(left + (rigth - left) / 2);
+      if (arr[mid] === target) {
+        return true;
+      } else if (arr[mid] > target) {
+        rigth = mid - 1;
+      } else if (arr[mid] < target) {
+        left = mid + 1;
+      }
+    }
+    return false;
+  };
+  for (let i = 0; i < matrix.length; i++) {
+    if (matrix[i][0] <= target && matrix[i][matrix[i].length - 1] >= target) {
+      if (binaryFind(matrix[i], target)) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+/**
+ * 快慢指针
+ * 快走两步、慢走一步
+ * 快慢指针都指向头节点
+ * 如果链表长度为奇数，那么慢指针一定在中间的节点（快指针指向最后一个节点时）
+ * 如果链表长度为偶数，那么慢指针一定在中间的节点(第二个)（快指针指向空）
+ */
+// 给你单链表的头结点 head ，请你找出并返回链表的中间结点。
+// 如果有两个中间结点，则返回第二个中间结点。
+// 876 链表的中
+var middleNode = function (head) {
+  let f = head;
+  let s = head;
+  while (f && f.next) {
+    f = f.next.next;
+    s = s.next;
+  }
+  return s;
+};
+
+// 141 环形链表
+var middleNode = function (head) {
+  let f = head;
+  let s = head;
+  while (f && f.next) {
+    f = f.next.next;
+    s = s.next;
+    //  多加了这一部分代码
+    if (s === f) {
+      return true;
+    }
+  }
+  return false;
+};
+
+// 142. 环形链表 II
+// 相遇后，head继续走会跟slow相遇，相遇点为环形入口
+var detectCycle = function (head) {
+  let f = head;
+  let s = head;
+  while (f && f.next) {
+    f = f.next.next;
+    s = s.next;
+    //  多加了这一部分代码
+    if (s === f) {
+      //  多加了这一部分代码
+      while (s !== head) {
+        s = s.next;
+        head = head.next;
+      }
+      return s;
+    }
+  }
+  return null;
+};
+
+// 143. 重排链表
+// 找到中点，反转，交错穿插
+var reorderList = function (head) {
+  const findMiddleNode = function (head) {
+    let f = head;
+    let s = head;
+    while (f && f.next) {
+      f = f.next.next;
+      s = s.next;
+    }
+    return s;
+  };
+  const re = function (head) {
+    let pre = null;
+    let cur = head;
+    while (cur) {
+      const curNext = cur.next;
+      cur.next = pre;
+      pre = cur;
+      cur = curNext;
+    }
+    return pre;
+  };
+  let head2 = re(findMiddleNode(head));
+  // 记住这个
+  while (head2.next) {
+    const headnext = head.next;
+    const head2next = head2.next;
+    head.next = head2;
+    head2.next = headnext;
+    head = headnext;
+    head2 = head2next;
+  }
+};
+
+// 234. 回文链表
+// 第一种方法就是把数放到数组，然后通过双指针判断
+// 第二种方法使用快慢指针，先反转链表，在对比
+var isPalindrome = function (head) {
+  const findMiddleNode = function (head) {
+    let f = head;
+    let s = head;
+    while (f && f.next) {
+      f = f.next.next;
+      s = s.next;
+    }
+    return s;
+  };
+  const re = function (head) {
+    let pre = null;
+    let cur = head;
+    while (cur) {
+      const curNext = cur.next;
+      cur.next = pre;
+      pre = cur;
+      cur = curNext;
+    }
+    return pre;
+  };
+  let head2 = re(findMiddleNode(head));
+  while (head2 && head) {
+    if (head2.val !== head.val) {
+      return false;
+    }
+    head2 = head2.next;
+    head = head.next;
+  }
+  return true;
+};
+
+// 岛屿问题
+// 695. 岛屿的最大面积
+var maxAreaOfIsland = function (grid) {
+  const n = grid.length;
+  const m = grid[0].length;
+
+  const isValid = (x, y) => {
+    return x >= 0 && x <= n - 1 && y >= 0 && y <= m - 1;
+  };
+  const getArea = (x, y, grid) => {
+    if (!isValid(x, y)) {
+      return 0;
+    }
+    if (grid[x][y] !== 1) {
+      return 0;
+    }
+
+    grid[x][y] = 2;
+
+    return (
+      1 +
+      getArea(x - 1, y, grid) +
+      getArea(x + 1, y, grid) +
+      getArea(x, y - 1, grid) +
+      getArea(x, y + 1, grid)
+    );
+  };
+
+  let res = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      if (grid[i][j] === 1) {
+        res = Math.max(res, getArea(i, j, grid));
+      }
+    }
+  }
+  return res;
+};
+
+// 200. 岛屿数量
+var numIslands = function (grid) {
+  const n = grid.length;
+  const m = grid[0].length;
+
+  const isValid = (x, y) => {
+    return x >= 0 && x <= n - 1 && y >= 0 && y <= m - 1;
+  };
+  // 跟面积一样的思路，只是dfs时将岛屿填平为0
+  const getArea = (x, y, grid) => {
+    if (!isValid(x, y)) {
+      return;
+    }
+    if (grid[x][y] !== "1") {
+      return;
+    }
+
+    grid[x][y] = "0";
+
+    return (
+      getArea(x - 1, y, grid) +
+      getArea(x + 1, y, grid) +
+      getArea(x, y - 1, grid) +
+      getArea(x, y + 1, grid)
+    );
+  };
+
+  let res = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      if (grid[i][j] === "1") {
+        res += 1;
+        getArea(i, j, grid);
+      }
+    }
+  }
+  return res;
+};

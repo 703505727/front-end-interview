@@ -1,3 +1,7 @@
+// 二分查找分两种
+// 一种直接找到答案
+// 另一种是 > >= < <=
+
 /**
  * @param {number[]} nums
  * @param {number} target

@@ -1238,3 +1238,17 @@ var minCut = function (s) {
   }
   return dp[0][length - 1];
 };
+
+// 96. 不同的二叉搜索树
+function numTrees(n) {
+  const dp = new Array(n + 1).fill(0);
+  dp[0] = 1;
+  dp[1] = 1;
+  for (let i = 2; i <= n; i++) {
+    for (let j = 0; j < i; j++) {
+      //  j 从 0-i-1 遍历，用 i 个节点构建 BSTBSTBST，除去根节点，剩 i−1 个节点构建左、右子树，左子树分配 0 个，则右子树分配到 i-1 个……以此类推。
+      dp[i] += dp[i - 1 - j] * dp[j];
+    }
+  }
+  return dp[n];
+}
