@@ -27,6 +27,7 @@ function longestConsecutive2(nums) {
   let ans = 0;
   for (const num of set_nums) {
     // 所以使用map 变成O(1)
+    // 检查是否是起点
     if (!set_nums.has(num - 1)) {
       let currentValue = num;
       let length = 1;
@@ -125,6 +126,7 @@ function findAnagrams(s, p) {
  * @return {number[]}
  */
 // 定长窗口模糊 单调队列题
+// 单调递减队列 保存下标
 var maxSlidingWindow = function (nums, k) {
   const q = [];
   const ans = [];
@@ -588,4 +590,198 @@ var numIslands = function (grid) {
     }
   }
   return res;
+};
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} list1
+ * @param {ListNode} list2
+ * @return {ListNode}
+ */
+// 21. 合并两个有序链表
+var mergeTwoLists = function (list1, list2) {
+  const dummy = new ListNode(0, null);
+  let index1 = list1;
+  let index2 = list2;
+  let pre = dummy;
+  while (index1 && index2) {
+    if (index1.val > index2.val) {
+      pre.next = index2;
+      index2 = index2.next;
+      pre = pre.next;
+    } else {
+      pre.next = index1;
+      index1 = index1.next;
+      pre = pre.next;
+    }
+  }
+  if (index1) {
+    pre.next = index1;
+  } else {
+    pre.next = index2;
+  }
+  return dummy.next;
+};
+
+// 最小栈，用辅助栈记录，当前操作元素所对应元素前面的最小元素
+var MinStack = function () {
+  this.stack = [];
+  this.stack2 = [];
+};
+
+/**
+ * @param {number} val
+ * @return {void}
+ */
+MinStack.prototype.push = function (val) {
+  if (this.stack.length) {
+    this.stack.push(val);
+    const min = Math.min(val, this.stack2[this.stack2.length - 1]);
+    this.stack2.push(min);
+  } else {
+    this.stack.push(val);
+    this.stack2.push(val);
+  }
+};
+
+/**
+ * @return {void}
+ */
+MinStack.prototype.pop = function () {
+  this.stack.pop();
+  this.stack2.pop();
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.top = function () {
+  return this.stack[this.stack.length - 1];
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.getMin = function () {
+  return this.stack2[this.stack2.length - 1];
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * var obj = new MinStack()
+ * obj.push(val)
+ * obj.pop()
+ * var param_3 = obj.top()
+ * var param_4 = obj.getMin()
+ */
+
+/**
+ * @param {string} s
+ * @return {string}
+ */
+// 394. 字符串解码
+// 考虑多位数字的情况
+var decodeString = function (s) {
+  const getStr = (str) => {
+    let target = "";
+    let i = 0;
+    while (i < str.length) {
+      debugger;
+      if (Number(str[i])) {
+        let curCount = Number(str[i]);
+        while (Number(str[i + 1]) || Number(str[i + 1]) === 0) {
+          i++;
+          curCount = curCount * 10 + Number(str[i]);
+        }
+        let count = 1;
+        let j = i + 2;
+        while (count > 0) {
+          if (str[j] === "]") {
+            count--;
+          } else if (str[j] === "[") {
+            count++;
+          }
+          j++;
+        }
+        const newStr = str.substring(i + 2, j - 1);
+        console.log(newStr, str, i, j);
+        target += getStr(newStr).repeat(curCount);
+        i = j;
+      } else {
+        target += str[i];
+        i++;
+      }
+    }
+    return target;
+  };
+  return getStr(s);
+};
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+// 98. 验证二叉搜索树
+// 错误的只检查了节点与其直接的子节点之间的关系，没有检查整棵子树。对于二叉搜索树来说，我们需要验证对于任何节点都要满足要求
+var isValidBST = function (root) {
+  // 错误答案
+  const dfs = (node) => {
+    if (!node) {
+      return true;
+    }
+    return (
+      (node.left ? node.left.val < node.val && dfs(node.left) : true) &&
+      (node.right ? node.right.val > node.val && dfs(node.right) : true)
+    );
+  };
+  return dfs(root);
+};
+
+// 前序遍历
+var isValidBST = function (root) {
+  const preDfs = (node, low, high) => {
+    if (!node) {
+      return true;
+    }
+    if (node.val <= low || node.val >= high) {
+      return false;
+    }
+    return (
+      preDfs(node.left, low, node.val) && preDfs(node.right, node.val, high)
+    );
+  };
+  return preDfs(root, -Infinity, Infinity);
+};
+
+// 中序 严格递增
+var isValidBST = function (root) {
+  let pre = -Infinity;
+  const minDfs = (node) => {
+    if (!node) {
+      return true;
+    }
+    if (!minDfs(node.left)) {
+      return false;
+    }
+    if (node.val <= pre) {
+      return false;
+    }
+    pre = node.val;
+    return minDfs(node.right);
+  };
+  return minDfs(root);
 };

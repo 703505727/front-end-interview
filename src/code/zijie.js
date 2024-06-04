@@ -513,7 +513,7 @@ var maxSubArray = function (nums) {
   return ans;
 };
 
-// 最长回文子串 //区间DP
+// 最长回文子序列 //区间DP
 /**
  * @param {string} s
  * @return {string}
@@ -987,6 +987,8 @@ var nextGreaterElements = function (nums) {
   return ret;
 };
 
+// 单调栈这一块周末加练习吧
+
 // 根节点到叶子结点的路径和 只有在左右节点都为空的时候才是叶子结点！
 function hasPathSum(root, targetSum) {
   if (!root) {
@@ -1133,7 +1135,7 @@ var lowestCommonAncestor = function (root, p, q) {
 // 516最长回文子串
 var longestPalindromeSubseq = function (s) {
   // dfs(i,i) = 1
-  // dfs(i,j) = dfs(i+1,j-1)
+  // dfs(i,j) = dfs(i+1,j-1) + 2
   // dfs(i,j) = max(dfs(i+1,j),dfs(i,j-1))
   const length = s.length;
   const dp = Array.from({ length: length }, () => Array(length).fill(0));
@@ -1252,3 +1254,50 @@ function numTrees(n) {
   }
   return dp[n];
 }
+
+// 接雨水
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+// 前后缀
+var trap = function (height) {
+  const length = height.length;
+  const preArray = Array(length).fill(0);
+  preArray[0] = height[0];
+  for (let i = 1; i < length; i++) {
+    preArray[i] = Math.max(preArray[i - 1], height[i]);
+  }
+  const postArray = Array(length).fill(0);
+  postArray[length - 1] = height[length - 1];
+  for (let i = length - 2; i >= 0; i--) {
+    postArray[i] = Math.max(postArray[i + 1], height[i]);
+  }
+  let ans = 0;
+  for (let i = 0; i < length; i++) {
+    ans += Math.min(postArray[i], preArray[i]) - height[i];
+  }
+  return ans;
+};
+
+// 双指针
+var trap2 = function (height) {
+  const length = height.length;
+  let pre = 0;
+  let post = 0;
+  let left = 0;
+  let rigth = length - 1;
+  let ans = 0;
+  while (rigth > left) {
+    pre = Math.max(pre, height[left]);
+    post = Math.max(post, height[rigth]);
+    if (pre < post) {
+      ans += pre - height[left];
+      left++;
+    } else {
+      ans += post - height[rigth];
+      rigth--;
+    }
+  }
+  return ans;
+};
