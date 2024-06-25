@@ -237,3 +237,11 @@ const objects = [
 const unique = uniqueObjects(objects);
 console.log(unique); // 输出去重后的对象数组
 ```
+
+
+Redux遵循的三个原则  
+1、单一真实数据源  
+2、状态是只读的  
+3、使用纯函数来执行修改  
+
+redux每一次的状态更新，整个store变化只是浅复制，所以对一些组件来说，他所引用的小状态并没有变化。

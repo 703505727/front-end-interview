@@ -166,7 +166,7 @@ var subarraySum = function (nums, k) {
     if (map.has(pre - k)) {
       ans += map.get(pre - k);
     }
-    if (map(pre)) {
+    if (map.has(pre)) {
       map.set(pre, map.get(pre) + 1);
     } else {
       map.set(pre, 1);
@@ -692,7 +692,6 @@ var decodeString = function (s) {
     let target = "";
     let i = 0;
     while (i < str.length) {
-      debugger;
       if (Number(str[i])) {
         let curCount = Number(str[i]);
         while (Number(str[i + 1]) || Number(str[i + 1]) === 0) {
@@ -709,8 +708,7 @@ var decodeString = function (s) {
           }
           j++;
         }
-        const newStr = str.substring(i + 2, j - 1);
-        console.log(newStr, str, i, j);
+        const newStr = str.slice(i + 2, j - 1);
         target += getStr(newStr).repeat(curCount);
         i = j;
       } else {
@@ -784,4 +782,276 @@ var isValidBST = function (root) {
     return minDfs(node.right);
   };
   return minDfs(root);
+};
+
+// 148. 排序链表
+function sortList(head) {
+  const dummy = new ListNode(0, null);
+  let pre = dummy;
+  const nodeArray = [];
+  while (head) {
+    // 要将原来的next断开，不然链表节点之间的关系没有正确断开，导致最终的链表可能形成了一个环
+    const headNext = head.next;
+    head.next = null;
+    nodeArray.push(head);
+    head = headNext;
+  }
+  nodeArray.sort((a, b) => a.val - b.val);
+
+  for (let i = 0; i < nodeArray.length; i++) {
+    pre.next = nodeArray[i];
+    pre = pre.next;
+  }
+
+  return dummy.next;
+}
+
+// 并归排序 写法
+// 自顶向下‘分’，自下而上‘治’
+const merge = (head1, head2) => {
+  const dummy = new ListNode(0, null);
+  let pre = dummy;
+  while (head1 && head2) {
+    if (head1.val > head2.val) {
+      pre.next = head2;
+      head2 = head2.next;
+    } else {
+      pre.next = head1;
+      head1 = head1.next;
+    }
+    pre = pre.next;
+  }
+  if (head1) {
+    pre.next = head1;
+  }
+  if (head2) {
+    pre.next = head2;
+  }
+  return dummy.next;
+};
+
+// 分
+const toSortList = (head, tail) => {
+  if (!head) {
+    return head;
+  }
+  if (head.next === tail) {
+    // 分的核心代码，最后变成一个元素（此处仅在链表时核心，因为要断开）
+    head.next = null;
+    return head;
+  }
+  let fast = head;
+  let slow = head;
+  while (fast !== tail) {
+    slow = slow.next;
+    fast = fast.next;
+    if (fast !== tail) {
+      fast = fast.next;
+    }
+  }
+  const mid = slow;
+  return merge(toSortList(head, mid), toSortList(mid, tail));
+};
+
+var sortList = function (head) {
+  return toSortList(head, null);
+};
+
+// 45. 跳跃游戏 II
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var jump = function (nums) {
+  // dfs(i) = dfs(j) + 1
+  const length = nums.length;
+  const dp = Array(length).fill(Infinity);
+  dp[0] = 0;
+  for (let i = 1; i < length; i++) {
+    for (let j = 0; j < i; j++) {
+      if (nums[j] + j >= i) {
+        dp[i] = Math.min(dp[i], dp[j] + 1);
+      }
+    }
+  }
+  return dp[length - 1];
+};
+
+// 763. 划分字母区间
+/**
+ * @param {string} s
+ * @return {number[]}
+ */
+var partitionLabels = function (s) {
+  const map = new Map();
+  for (let i = 0; i < s.length; i++) {
+    map.get(s[i]) ? map.set(s[i], map.get(s[i]) + 1) : map.set(s[i], 1);
+  }
+  const target = [];
+  const set = new Set([]);
+  for (let i = 0; i < s.length; i++) {
+    set.add(s[i]);
+    map.set(s[i], map.get(s[i]) - 1);
+    if (map.get(s[i]) === 0) {
+      set.delete(s[i]);
+      if (set.size === 0) {
+        if (target.length === 0) {
+          target.push(i + 1);
+        } else {
+          target.push(i + 1 - target.reduce((a, b) => a + b, 0));
+        }
+      }
+    }
+  }
+  return target;
+};
+
+// 118. 杨辉三角
+/**
+ * @param {number} numRows
+ * @return {number[][]}
+ */
+var generate = function (numRows) {
+  let count = numRows - 1;
+  const target = [[1]];
+  while (count) {
+    const temp = [1];
+    for (let i = 0; i < target[target.length - 1].length - 1; i++) {
+      temp.push(
+        target[target.length - 1][i] + target[target.length - 1][i + 1]
+      );
+    }
+    temp.push(1);
+    target.push(temp);
+    count--;
+  }
+  return target;
+};
+
+// 279. 完全平方数
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numSquares = function (n) {
+  const dp = Array(n + 1).fill(Infinity);
+  dp[0] = 0;
+  dp[1] = 1;
+  for (let i = 2; i <= n; i++) {
+    for (let j = 1; j <= Math.floor(Math.sqrt(i)); j++) {
+      if (i >= j * j) {
+        dp[i] = Math.min(dp[i], 1 + dp[i - j * j]);
+      }
+    }
+  }
+  return dp[n];
+};
+
+// 139. 单词拆分
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+  // dfs(i) = j  s.slice(i+1-j.length,i+1)===j dfs(i-j.length) false
+  const length = s.length;
+  const dp = Array(length + 1).fill(false);
+  dp[0] = true;
+  for (let i = 1; i <= length; i++) {
+    for (let j = 0; j < wordDict.length; j++) {
+      if (
+        i >= wordDict[j].length &&
+        s.slice(i - wordDict[j].length, i) === wordDict[j]
+      ) {
+        dp[i] = dp[i - wordDict[j].length] || dp[i];
+      }
+    }
+  }
+  return dp[length];
+};
+
+// 152. 乘积最大子数组
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxProduct = function (nums) {
+  // dfs(i) = zheng nums(i) max(dfs(i-1) * nums(i),nums(i))
+  const length = nums.length;
+  const dp = Array(length)
+    .fill(0)
+    .map(() => [0, 0]);
+
+  dp[0][0] = nums[0];
+  dp[0][1] = nums[0];
+  let target = -Infinity;
+  for (let i = 1; i < length; i++) {
+    if (nums[i] >= 0) {
+      dp[i][0] = Math.min(nums[i], nums[i] * dp[i - 1][0]);
+      dp[i][1] = Math.max(nums[i], nums[i] * dp[i - 1][1]);
+    } else {
+      dp[i][0] = Math.min(nums[i], nums[i] * dp[i - 1][1]);
+      dp[i][1] = Math.max(nums[i], nums[i] * dp[i - 1][0]);
+    }
+    target = Math.max(target, dp[i][1]);
+  }
+  return target;
+};
+
+// 64. 最小路径和
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function (grid) {
+  // dfs(i,j) = min dfs(i-1,j) dfs(i,j-1)
+  // dfs(i) = dfs(i-1) + dfs(i)
+  const n = grid.length;
+  const m = grid[0].length;
+  const dp = Array(m).fill(0);
+
+  // const dp = Array(n)
+  //   .fill(0)
+  //   .map(() => Array(m).fill(Infinity));
+  dp[0] = grid[0][0];
+  for (let i = 1; i < n; i++) {
+    dp[i] = dp[i - 1] + grid[0][i];
+  }
+
+  for (let i = 1; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      dp[i] = Math.min(dp[i], dp[i - 1]) + grid[i][j];
+    }
+  }
+  return dp[n - 1];
+};
+
+// 39 组合合成
+/**
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+var combinationSum = function (candidates, target) {
+  // 选或者不选
+  // dfs(i, t) dfs(i,t-candidates[i]) dfs(i+1,t)
+  const path = [];
+  const ans = [];
+  const dfs = (i, t) => {
+    if (t === 0) {
+      ans.push(path.slice());
+      return;
+    }
+    if (i === candidates.length) {
+      return;
+    }
+    dfs(i + 1, t);
+
+    path.push(candidates[i]);
+    dfs(i, t - candidates[i]);
+    path.pop();
+  };
+  dfs(0, target);
+  return ans;
 };

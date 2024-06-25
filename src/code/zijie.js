@@ -519,6 +519,7 @@ var maxSubArray = function (nums) {
  * @return {string}
  */
 var longestPalindromeSubseq = function (s) {
+  // dfs(i,j) = si===sj dfs(i+1,j-1)+2 si!==sj max dfs(i+1,j),dfs(i,j-1)
   const length = s.length;
   const dp = Array.from({ length: length }, () => Array(length).fill(0));
   for (let i = length - 1; i >= 0; i--) {
@@ -797,6 +798,7 @@ var longestValidParentheses = function (s) {
 };
 // 32 官解，参考
 const longestValidParentheses = (s) => {
+  // dfs(i) 以s[i]结尾的最长有效
   let maxLen = 0;
   const len = s.length;
   const dp = new Array(len).fill(0);
@@ -1221,17 +1223,13 @@ var minCut = function (s) {
   const length = s.length;
   const dp = Array.from({ length }, () => Array(length).fill(0));
   for (let i = length - 1; i >= 0; i--) {
-    for (let j = i; j < length; j++) {
+    dp[i][i] = 0;
+    for (let j = i + 1; j < length; j++) {
       if (isHuiwen(s.slice(i, j + 1))) {
         dp[i][j] = 0;
       } else {
         let min = Infinity;
         for (let k = i; k < j; k++) {
-          if (k === i) {
-            min = Math.min(min, 1 + dp[k + 1][j]);
-          } else if (k === j - 1) {
-            min = Math.min(min, 1 + dp[i][k]);
-          }
           min = Math.min(min, 1 + dp[i][k] + dp[k + 1][j]);
         }
         dp[i][j] = min;
@@ -1300,4 +1298,19 @@ var trap2 = function (height) {
     }
   }
   return ans;
+};
+
+/**
+ * @param {number} bamboo_len
+ * @return {number}
+ */
+var cuttingBamboo = function (bamboo_len) {
+  const dp = Array(bamboo_len + 1).fill(0);
+  dp[1] = 1;
+  for (let i = 2; i <= bamboo_len; i++) {
+    for (let j = 1; j < i; j++) {
+      dp[i] = Math.max(dp[i], j * dp[i - j], j * (i - j));
+    }
+  }
+  return dp[bamboo_len];
 };
