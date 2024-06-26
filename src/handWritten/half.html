@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      .outer {
+        width: 400px;
+        height: 100%;
+        background: blue;
+        margin: 0 auto;
+
+        display: flex;
+        align-items: center;
+      }
+
+      .inner {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 50%;
+        background: red;
+      }
+
+      .box {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="outer">
+      <div class="inner">
+        <div class="box">hello</div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- 这里使用了一个小技巧：将div的height属性设置为0，然后用padding-bottom来控制高度。padding-bottom的值按百分比计算是相对于元素宽度的，不是高度。所以设置padding-bottom为50%就能保证div的高度是其宽度的一半。这种方法利用了padding属性百分比值是基于父元素宽度计算的特性。
+
+值得注意的是，这个div的实际内容应该放在另一个绝对定位的子元素中，因为如果直接在这个div中添加内容，由于其height实际上是由padding-bottom生成的，可能会导致内容显示不正确。 -->
