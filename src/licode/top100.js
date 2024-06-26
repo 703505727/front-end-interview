@@ -166,7 +166,7 @@ var subarraySum = function (nums, k) {
     if (map.has(pre - k)) {
       ans += map.get(pre - k);
     }
-    if (map(pre)) {
+    if (map.has(pre)) {
       map.set(pre, map.get(pre) + 1);
     } else {
       map.set(pre, 1);
@@ -692,7 +692,6 @@ var decodeString = function (s) {
     let target = "";
     let i = 0;
     while (i < str.length) {
-      debugger;
       if (Number(str[i])) {
         let curCount = Number(str[i]);
         while (Number(str[i + 1]) || Number(str[i + 1]) === 0) {
@@ -710,7 +709,6 @@ var decodeString = function (s) {
           j++;
         }
         const newStr = str.substring(i + 2, j - 1);
-        console.log(newStr, str, i, j);
         target += getStr(newStr).repeat(curCount);
         i = j;
       } else {
