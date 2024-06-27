@@ -708,6 +708,7 @@ var decodeString = function (s) {
           }
           j++;
         }
+        // const newStr = str.substring(i + 2, j - 1);
         const newStr = str.slice(i + 2, j - 1);
         target += getStr(newStr).repeat(curCount);
         i = j;

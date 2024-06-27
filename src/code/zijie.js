@@ -1290,6 +1290,7 @@ var trap2 = function (height) {
     pre = Math.max(pre, height[left]);
     post = Math.max(post, height[rigth]);
     if (pre < post) {
+      // 我左边最大的数就是pre了，而且我还比右指针的值还要小，那么我就可以取水了
       ans += pre - height[left];
       left++;
     } else {
