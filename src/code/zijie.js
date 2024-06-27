@@ -1134,7 +1134,7 @@ var lowestCommonAncestor = function (root, p, q) {
  * @param {string} s
  * @return {number}
  */
-// 516最长回文子串
+// 516最长回文子串（子序列）
 var longestPalindromeSubseq = function (s) {
   // dfs(i,i) = 1
   // dfs(i,j) = dfs(i+1,j-1) + 2
