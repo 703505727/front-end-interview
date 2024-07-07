@@ -1056,3 +1056,41 @@ var combinationSum = function (candidates, target) {
   dfs(0, target);
   return ans;
 };
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode[]} lists
+ * @return {ListNode}
+ */
+var mergeKLists = function (lists) {
+  const dummy = new ListNode(0, null)
+  let pre = dummy
+  const length = lists.length
+  const headArray = []
+  for (let i = 0; i < length; i++) {
+    const head = lists[i][0]
+    headArray.push(head)
+  }
+  let isNull = 0;
+  while (isNull <= length) {
+    const min = 0;
+    for (let i = 1; i < length; i++) {
+      if ((headArray[i] ? headArray[i].val : Infinity) < (headArray[min] ? headArray[min].val : Infinity)) {
+        min = i
+      }
+    }
+    pre.next = headArray[min];
+    pre = pre.next
+    headArray[min] = headArray[min].next
+    if (!headArray[min]) {
+      isNull++
+    }
+  }
+  return dummy.next
+};
