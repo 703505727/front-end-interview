@@ -1189,7 +1189,7 @@ var maximalSquare = function (matrix) {
   for (let i = 1; i < n; i++) {
     for (let j = 1; j < m; j++) {
       for (let k = 0; k <= dp[i][j]; k++) {
-        if (dp[i - k][j - k] === '1') {
+        if (i - k >= 0 && j - k >= 0 && matrix[i - k][j - k] === '1') {
           dp[i][j] += 1
         } else {
           break
