@@ -1176,12 +1176,12 @@ var maximalSquare = function (matrix) {
   const m = matrix[0].length;
   const dp = Array(n).fill(0).map(() => Array(m).fill(0))
   for (let i = 0; i < n; i++) {
-    if (dp[n][0] === '1') {
-      dp[n][0] = 1
+    if (matrix[i][0] === '1') {
+      dp[i][0] = 1
     }
   }
   for (let j = 0; j < m; j++) {
-    if (dp[0][j] === '1') {
+    if (matrix[0][j] === '1') {
       dp[0][j] = 1
     }
   }
@@ -1199,4 +1199,4 @@ var maximalSquare = function (matrix) {
     }
   }
   return ans * ans
-}; 
+};
