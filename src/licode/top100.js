@@ -1057,6 +1057,8 @@ var combinationSum = function (candidates, target) {
   return ans;
 };
 
+// k 个头指针解法
+// 两两合并
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {
@@ -1072,25 +1074,129 @@ var mergeKLists = function (lists) {
   const dummy = new ListNode(0, null)
   let pre = dummy
   const length = lists.length
-  const headArray = []
-  for (let i = 0; i < length; i++) {
-    const head = lists[i][0]
-    headArray.push(head)
-  }
   let isNull = 0;
-  while (isNull <= length) {
-    const min = 0;
+  while (isNull < length) {
+    let min = 0;
     for (let i = 1; i < length; i++) {
-      if ((headArray[i] ? headArray[i].val : Infinity) < (headArray[min] ? headArray[min].val : Infinity)) {
+      if ((lists[i] ? lists[i].val : Infinity) < (lists[min] ? lists[min].val : Infinity)) {
         min = i
       }
     }
-    pre.next = headArray[min];
+    if (!lists[min]) {
+      break
+    }
+    pre.next = lists[min];
     pre = pre.next
-    headArray[min] = headArray[min].next
-    if (!headArray[min]) {
+    lists[min] = lists[min].next
+    if (!lists[min]) {
       isNull++
     }
   }
   return dummy.next
 };
+
+
+/**
+ * // Definition for a _Node.
+ * function _Node(val, next, random) {
+ *    this.val = val;
+ *    this.next = next;
+ *    this.random = random;
+ * };
+ */
+
+/**
+ * @param {_Node} head
+ * @return {_Node}
+ */
+var copyRandomList = function (head) {
+  let cur = head;
+  const map = new Map();
+  // 新旧节点对应map，但是next random 仍指向旧节点
+  while (cur) {
+    map.set(cur, new _Node(cur.val, cur.next, cur.random))
+    cur = cur.next
+  }
+  cur = head;
+  // 更新next random
+  while (cur) {
+    const node = map.get(cur)
+    if (node) {
+      node.next = node.next ? map.get(node.next) : null
+      node.random = node.random ? map.get(node.random) : null
+    }
+    cur = cur.next
+  }
+  return map.get(head)
+};
+
+// 上方法仍需要 On 的空间复杂度
+var copyRandomList2 = function (head) {
+  if (!head) {
+    return null
+  }
+  let cur = head;
+  // 每个链表复制一个新的在后面跟着
+  while (cur) {
+    const newNode = new _Node(cur.val)
+    newNode.next = cur.next
+    cur.next = newNode
+    cur = newNode.next
+  }
+  cur = head;
+  // 更新复制了的node的random
+  while (cur) {
+    if (cur.random) {
+      cur.next.random = cur.random.next
+    }
+    cur = cur.next.next
+  }
+  // 拆分
+  cur = head.next;
+  const res = head.next;
+  let pre = head
+
+  while (cur.next) {
+    pre.next = pre.next.next
+    cur.next = cur.next.next
+    pre = pre.next
+    cur = cur.next
+  }
+  pre.next = null
+  return res
+};
+
+/**
+ * @param {character[][]} matrix
+ * @return {number}
+ */
+var maximalSquare = function (matrix) {
+  // dfs(i,j) = [i-dfs(i-1,j-1),  i] [j-dfs(i-1,j-1),j]
+  const n = matrix.length;
+  const m = matrix[0].length;
+  const dp = Array(n).fill(0).map(() => Array(m).fill(0))
+  for (let i = 0; i < n; i++) {
+    if (dp[n][0] === '1') {
+      dp[n][0] = 1
+    }
+  }
+  for (let j = 0; j < m; j++) {
+    if (dp[0][j] === '1') {
+      dp[0][j] = 1
+    }
+  }
+  let ans = 0;
+  for (let i = 1; i < n; i++) {
+    for (let j = 1; j < m; j++) {
+      for (let k = 0; k <= dp[i][j]; k++) {
+        if (dp[i - k][j - k] === '1') {
+          dp[i][j] += 1
+        } else {
+          break
+        }
+        ans = Math.max(ans, dp[i][j])
+      }
+    }
+  }
+  return ans * ans
+}; 
