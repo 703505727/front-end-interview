@@ -1175,27 +1175,25 @@ var maximalSquare = function (matrix) {
   const n = matrix.length;
   const m = matrix[0].length;
   const dp = Array(n).fill(0).map(() => Array(m).fill(0))
+  let ans = 0;
   for (let i = 0; i < n; i++) {
     if (matrix[i][0] === '1') {
       dp[i][0] = 1
+      ans = 1
     }
   }
   for (let j = 0; j < m; j++) {
     if (matrix[0][j] === '1') {
       dp[0][j] = 1
+      ans = 1
     }
   }
-  let ans = 0;
   for (let i = 1; i < n; i++) {
     for (let j = 1; j < m; j++) {
-      for (let k = 0; k <= dp[i][j]; k++) {
-        if (i - k >= 0 && j - k >= 0 && matrix[i - k][j - k] === '1') {
-          dp[i][j] += 1
-        } else {
-          break
-        }
-        ans = Math.max(ans, dp[i][j])
+      if (matrix[i][j] === '1') {
+        dp[i][j] = Math.min(dp[i][j - 1], dp[i - 1][j - 1], dp[i - 1][j]) + 1
       }
+      ans = Math.max(ans, dp[i][j])
     }
   }
   return ans * ans
