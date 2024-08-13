@@ -1315,3 +1315,87 @@ var cuttingBamboo = function (bamboo_len) {
   }
   return dp[bamboo_len];
 };
+
+// 1488 避免洪水泛滥
+/**
+ * @param {number[]} rains
+ * @return {number[]}
+ */
+var avoidFlood = function (rains) {
+  const length = rains.length;
+  const ans = Array(length).fill(-1);
+  const set = new Set();
+  const map = new Map();
+  const getDay = (l, r) => {
+    for (let i = l + 1; i < r; i++) {
+      if (rains[i] === 0) {
+        return i;
+      }
+    }
+    return false;
+  };
+  for (let i = 0; i < rains.length; i++) {
+    if (rains[i] > 0) {
+      if (set.has(rains[i])) {
+        // 已经满了
+        const pre = map.get(rains[i]);
+        const day = getDay(pre, i);
+        if (day) {
+          ans[day] = rains[i];
+        } else {
+          return [];
+        }
+      } else {
+        set.add(rains[i]);
+      }
+      map.set(rains[i], i);
+    }
+  }
+};
+
+// 54 螺旋矩阵
+function spiralOrder(matrix) {
+  const n = matrix.length;
+  const m = matrix[0].length;
+  const ans = [];
+  let top = 0;
+  let bottom = n - 1;
+  let right = m - 1;
+  let left = 0;
+  while (ans.length !== n * m) {
+    for (let i = left; i <= right; i++) ans.push(matrix[top][i]);
+    top++;
+    if (ans.length === n * m) break;
+    for (let i = top; i <= bottom; i++) ans.push(matrix[i][right]);
+    right--;
+    if (ans.length === n * m) break;
+    for (let i = right; i >= left; i--) ans.push(matrix[bottom][i]);
+    bottom--;
+    if (ans.length === n * m) break;
+    for (let i = bottom; i >= top; i--) ans.push(matrix[i][left]);
+    left++;
+  }
+  return ans;
+}
+// 59 螺旋矩阵II
+function generateMatrix(n) {
+  let top = 0,
+    bottom = n - 1;
+  let left = 0,
+    right = n - 1;
+  let res = [];
+  for (let i = 0; i < n; i++) res[i] = [];
+  let cur = 1,
+    total = n * n;
+  while (cur <= total) {
+    for (let i = left; i <= right; i++) res[top][i] = cur++; // 从左到右
+    top++;
+    for (let i = top; i <= bottom; i++) res[i][right] = cur++; // 从上到下
+    right--;
+    for (let i = right; i >= left; i--) res[bottom][i] = cur++; // 从右到左
+    bottom--;
+    for (let i = bottom; i >= top; i--) res[i][left] = cur++; // 从下到上
+    left++;
+  }
+  return res;
+}
